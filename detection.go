@@ -32,7 +32,7 @@ func AiDetection(msgs <-chan amqp.Delivery) {
 				"./ai/internal_find_exact.py",
 				"--id", message.ID,
 				"--path", message.FilePath,
-				"--topk", "100",
+				"--topk", "2",
 			)
 
 			cmd.Stdout = os.Stdout

@@ -2,3 +2,4 @@
 .env
 .~lock.*
 ai/.venv
+data.csv
