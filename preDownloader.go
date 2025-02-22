@@ -3,8 +3,6 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	amqp "github.com/rabbitmq/amqp091-go"
-	"log"
 	"os"
 )
 
@@ -37,25 +35,21 @@ func ReadCSV() ([]FileData, error) {
 
 }
 
-func PreDownloader(ch *amqp.Channel, queueName string) error {
+func PreDownloader(ResultMSG chan<- Message) error {
 	data, err := ReadCSV()
 	if err != nil {
 		return fmt.Errorf("error reading csv: %w", err)
 	}
 
 	for _, d := range data {
-		err := PublishMessage(ch, Message{
+		ResultMSG <- Message{
 			ID:        d.VideoID,
 			MasterURL: d.MasterPlaylist,
-		}, queueName)
-		if err != nil {
-			return fmt.Errorf("error publishing message: %w", err)
 		}
-		log.Println("Published message with video id: ", d.VideoID)
 	}
 	return nil
 }
 
 /*
-Read from csv file and publish to the download_queue ( masterPlaylist, video_id)
+   Read from csv file and publish to the download_queue ( masterPlaylist, video_id)
 */

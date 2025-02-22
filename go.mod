@@ -1,8 +1,9 @@
 module awesomeProject1
 
-go 1.24
+go 1.24.0
 
 require (
+	github.com/google/uuid v1.6.0
 	github.com/rabbitmq/amqp091-go v1.10.0
 	go.uber.org/fx v1.23.0
 )
