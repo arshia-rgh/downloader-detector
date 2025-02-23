@@ -10,10 +10,7 @@ import (
 
 func main() {
 	app := fx.New(
-		fx.Provide(
-			RabbitURL,
-			InitRabbit,
-		),
+		RabbitModule,
 		fx.Invoke(
 			InitRabbitQueues,
 			PreDownloadProcess,

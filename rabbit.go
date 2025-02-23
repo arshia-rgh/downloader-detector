@@ -4,11 +4,24 @@ import (
 	"encoding/json"
 	"fmt"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"go.uber.org/fx"
 	"os"
 	"time"
 )
 
-type RabbitMQURL string
+var RabbitModule = fx.Module(
+	"rabbit",
+	fx.Provide(
+		fx.Annotate(
+			RabbitURL,
+			fx.ResultTags(`name:"RABBIT_URL"`),
+		),
+		fx.Annotate(
+			InitRabbit,
+			fx.ParamTags(`name:"RABBIT_URL"`),
+		),
+	),
+)
 
 type Message struct {
 	ID        string `json:"id"`
@@ -30,16 +43,12 @@ func Getenv(key, defaultValue string, optional bool) (string, error) {
 	return "", fmt.Errorf("%s is required", key)
 }
 
-func RabbitURL() RabbitMQURL {
-	//url, err := Getenv("RABBIT_URL", "amqp://guest:guest@localhost:5672/", false)
-	//if err != nil {
-	//	panic(err)
-	//}
-	return RabbitMQURL("amqp://guest:guest@localhost:5672/")
+func RabbitURL() (string, error) {
+	return Getenv("RABBIT_URL", "amqp://guest:guest@localhost:5672/", false)
 }
 
-func InitRabbit(rabbitURL RabbitMQURL) (*amqp.Connection, *amqp.Channel, error) {
-	connection, err := amqp.Dial(string(rabbitURL))
+func InitRabbit(rabbitURL string) (*amqp.Connection, *amqp.Channel, error) {
+	connection, err := amqp.Dial(rabbitURL)
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to connect to RabbitMQ: %v", err)
 	}
