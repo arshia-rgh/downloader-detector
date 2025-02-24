@@ -41,11 +41,12 @@ if __name__ == "__main__":
         data = pd.read_csv('watermark_timestamps.csv').values.tolist()
 
     case, _ = load_audio(args.path, args.sr)
-    welcome_case = case[5 * args.sr :10 * 60 * args.sr]
-    goodbye_case = case[len(case) - 10 * 60 * args.sr: len(case) - 5 * args.sr]
+    time_offset = 15
+    welcome_case = case[5 * args.sr :time_offset * 60 * args.sr]
+    goodbye_case = case[len(case) - time_offset * 60 * args.sr: len(case) - 5 * args.sr]
 
     welcome_watermark_start = find_possible_watermark_start(welcome_watermark, welcome_case, top_k=args.topk, sr=args.sr)
-    goodbye_watermark_start = [len(case) / args.sr - 10 * 60 + pt for pt in find_possible_watermark_start(goodbye_watermark, goodbye_case, top_k=args.topk, sr=args.sr)]
+    goodbye_watermark_start = [len(case) / args.sr - time_offset * 60 + pt for pt in find_possible_watermark_start(goodbye_watermark, goodbye_case, top_k=args.topk, sr=args.sr)]
 
     data.append([args.id, args.path] + format_list_time(welcome_watermark_start + goodbye_watermark_start))
 
